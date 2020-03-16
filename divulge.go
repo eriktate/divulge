@@ -59,6 +59,24 @@ type UserService interface {
 	RemoveUser(ctx context.Context, id uuid.UUID) error
 }
 
+// A PostService knows how to work with Posts.
+type PostService interface {
+	SavePost(ctx context.Context, post Post) (uuid.UUID, error)
+	PublishPost(ctx context.Context, id uuid.UUID) error
+	RedactPost(ctx context.Context, id uuid.UUID) error
+
+	FetchPost(ctx context.Context, id uuid.UUID) (Post, error)
+	ListPostsByAccount(ctx context.Context, accountID uuid.UUID) ([]Post, error)
+
+	RemovePost(ctx context.Context, id uuid.UUID) error
+}
+
+// FileStore knows how to work with post content.
+type FileStore interface {
+	Write(ctx context.Context, key string, date []byte) error
+	Read(ctx context.Context, key string) ([]byte, error)
+}
+
 // IsEmpty returns true if the id provided is empty.
 func IsEmpty(id uuid.UUID) bool {
 	return id == zeroUUID
