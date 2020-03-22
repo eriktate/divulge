@@ -1,3 +1,11 @@
+all: build run
+
+run:
+	./divulge
+
+build:
+	go build -o divulge cmd/server/main.go
+
 test:
 	go test -v ./...
 
