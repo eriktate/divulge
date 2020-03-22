@@ -37,7 +37,8 @@ type Post struct {
 	AuthorID    uuid.UUID  `json:"authorId" db:"author_id"`
 	Title       string     `json:"title" db:"title"`
 	Summary     string     `json:"summary" db:"summary"`
-	ContentPath string     `json:"contentPath" db:"content_path"`
+	ContentPath string     `json:"contentPath,omitempty" db:"content_path"`
+	Content     string     `json:"content,omitempty" db:"-"`
 	CreatedAt   time.Time  `json:"createdAt" db:"created_at"`
 	UpdatedAt   time.Time  `json:"updatedAt" db:"updated_at"`
 	PublishedAt *time.Time `json:"publishedAt,omitempty" db:"published_at"`
@@ -57,6 +58,24 @@ type UserService interface {
 	FetchUser(ctx context.Context, id uuid.UUID) (User, error)
 	ListUsers(ctx context.Context) ([]User, error)
 	RemoveUser(ctx context.Context, id uuid.UUID) error
+}
+
+// A PostService knows how to work with Posts.
+type PostService interface {
+	SavePost(ctx context.Context, post Post) (uuid.UUID, error)
+	PublishPost(ctx context.Context, id uuid.UUID) error
+	RedactPost(ctx context.Context, id uuid.UUID) error
+
+	FetchPost(ctx context.Context, id uuid.UUID) (Post, error)
+	ListPostsByAccount(ctx context.Context, accountID uuid.UUID) ([]Post, error)
+
+	RemovePost(ctx context.Context, id uuid.UUID) error
+}
+
+// FileStore knows how to work with post content.
+type FileStore interface {
+	Write(ctx context.Context, key string, data []byte) error
+	Read(ctx context.Context, key string) ([]byte, error)
 }
 
 // IsEmpty returns true if the id provided is empty.
