@@ -1,0 +1,17 @@
+// create a new post
+http://localhost:1337
+POST /post
+{
+	"id": "469fd738-9c32-4f79-822d-d7683cdff7fa",
+	"title": "Test Post",
+	"summary": "This is a post that's strictly for testing purposes"
+}
+
+// get a post
+http://localhost:1337
+GET /post/469fd738-9c32-4f79-822d-d7683cdff7fa
+
+
+// list posts
+http://localhost:1337
+GET /post

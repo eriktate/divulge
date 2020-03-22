@@ -1,7 +1,16 @@
 package main
 
-import "log"
+import (
+	"github.com/eriktate/divulge/http"
+	"github.com/eriktate/divulge/mock"
+	"github.com/sirupsen/logrus"
+)
 
 func main() {
-	log.Println("hello, world!")
+	logger := logrus.New()
+
+	logger.Info("starting...")
+	ps := &mock.PostService{}
+	server := http.New("localhost", 1337, http.BuildRouter(ps, logger))
+	logger.Error(server.Start())
 }
