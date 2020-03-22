@@ -1,3 +1,5 @@
+// +build integration
+
 package pg_test
 
 import (
