@@ -17,8 +17,9 @@ func helloHandler() http.HandlerFunc {
 
 func BuildRouter(ps divulge.PostService, logger *logrus.Logger) *chi.Mux {
 	r := chi.NewRouter()
-	r.Post("/post", postPost(ps, logger))
-	r.Get("/post/{postID}", getPost(ps, logger))
+	r.Post("/post", PostPost(ps, logger))
+	r.Get("/post", GetPosts(ps, logger))
+	r.Get("/post/{postID}", GetPost(ps, logger))
 
 	return r
 }

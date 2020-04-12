@@ -2,6 +2,7 @@ package divulge
 
 import (
 	"context"
+	"errors"
 	"time"
 
 	"github.com/google/uuid"
@@ -44,6 +45,11 @@ type Post struct {
 	PublishedAt *time.Time `json:"publishedAt,omitempty" db:"published_at"`
 }
 
+// A ListPostsReq contains all of the options for listing posts.
+type ListPostsReq struct {
+	AccountID uuid.UUID
+}
+
 // An AccountService knows how to work with Accounts.
 type AccountService interface {
 	SaveAccount(ctx context.Context, account Account) (uuid.UUID, error)
@@ -67,7 +73,7 @@ type PostService interface {
 	RedactPost(ctx context.Context, id uuid.UUID) error
 
 	FetchPost(ctx context.Context, id uuid.UUID) (Post, error)
-	ListPostsByAccount(ctx context.Context, accountID uuid.UUID) ([]Post, error)
+	ListPosts(ctx context.Context, req ListPostsReq) ([]Post, error)
 
 	RemovePost(ctx context.Context, id uuid.UUID) error
 }
@@ -81,4 +87,19 @@ type FileStore interface {
 // IsEmpty returns true if the id provided is empty.
 func IsEmpty(id uuid.UUID) bool {
 	return id == zeroUUID
+}
+
+// validations
+
+// Validate a Post's data.
+func (p Post) Validate() error {
+	if p.AccountID == zeroUUID {
+		return errors.New("must have a valid AccountID")
+	}
+
+	if p.AuthorID == zeroUUID {
+		return errors.New("must have a valid AuthorID")
+	}
+
+	return nil
 }

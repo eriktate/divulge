@@ -11,7 +11,39 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func getPost(ps divulge.PostService, log *logrus.Logger) http.HandlerFunc {
+// GetPost handles HTTP requests for fetching a specific Post.
+func GetPosts(ps divulge.PostService, log *logrus.Logger) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		queryAccountID := r.URL.Query().Get("accountId")
+		accountID, err := uuid.Parse(queryAccountID)
+		if err != nil {
+			log.WithError(err).WithField("query_account_id", queryAccountID).Error("failed to parse uuid")
+			badRequest(w, "accountId is improperly formatted")
+			return
+		}
+
+		req := divulge.ListPostsReq{AccountID: accountID}
+
+		posts, err := ps.ListPosts(r.Context(), req)
+		if err != nil {
+			log.WithError(err).WithField("req", req).Error("failed to list posts")
+			serverError(w, "failed to list posts")
+			return
+		}
+
+		data, err := json.Marshal(posts)
+		if err != nil {
+			log.WithError(err).Error("failed to marshal post")
+			serverError(w, "something went wrong while fetching post")
+			return
+		}
+
+		ok(w, data)
+	}
+}
+
+// GetPost handles HTTP requests for fetching a specific Post.
+func GetPost(ps divulge.PostService, log *logrus.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		postID := chi.URLParam(r, "postID")
 		id, err := uuid.Parse(postID)
@@ -39,7 +71,8 @@ func getPost(ps divulge.PostService, log *logrus.Logger) http.HandlerFunc {
 	}
 }
 
-func postPost(ps divulge.PostService, log *logrus.Logger) http.HandlerFunc {
+// PostPost handles HTTP requests for posting a Post.
+func PostPost(ps divulge.PostService, log *logrus.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		data, err := ioutil.ReadAll(r.Body)
 		if err != nil {
@@ -52,6 +85,12 @@ func postPost(ps divulge.PostService, log *logrus.Logger) http.HandlerFunc {
 		if err := json.Unmarshal(data, &post); err != nil {
 			log.WithError(err).Error("failed to unmarshal post")
 			badRequest(w, "malformed json")
+			return
+		}
+
+		if err := post.Validate(); err != nil {
+			log.WithError(err).Error("invalid post")
+			badRequest(w, "the post was invalid")
 			return
 		}
 

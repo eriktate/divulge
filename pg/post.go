@@ -130,9 +130,9 @@ func (db DB) FetchPost(ctx context.Context, id uuid.UUID) (divulge.Post, error) 
 	return post, nil
 }
 
-func (db DB) ListPostsByAccount(ctx context.Context, accountID uuid.UUID) ([]divulge.Post, error) {
+func (db DB) ListPosts(ctx context.Context, req divulge.ListPostsReq) ([]divulge.Post, error) {
 	var posts []divulge.Post
-	if err := db.db.SelectContext(ctx, &posts, listPostsByAccountQuery, accountID); err != nil {
+	if err := db.db.SelectContext(ctx, &posts, listPostsByAccountQuery, req.AccountID); err != nil {
 		return posts, fmt.Errorf("failed to select: %w", err)
 	}
 

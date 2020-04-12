@@ -20,8 +20,8 @@ type PostService struct {
 	FetchPostFn    func(ctx context.Context, id uuid.UUID) (divulge.Post, error)
 	FetchPostCount int
 
-	ListPostsByAccountFn    func(ctx context.Context, accountID uuid.UUID) ([]divulge.Post, error)
-	ListPostsByAccountCount int
+	ListPostsFn    func(ctx context.Context, req divulge.ListPostsReq) ([]divulge.Post, error)
+	ListPostsCount int
 
 	RemovePostFn    func(ctx context.Context, id uuid.UUID) error
 	RemovePostCount int
@@ -69,11 +69,11 @@ func (m *PostService) FetchPost(ctx context.Context, id uuid.UUID) (divulge.Post
 	return divulge.Post{}, m.Error
 }
 
-func (m *PostService) ListPostsByAccount(ctx context.Context, accountID uuid.UUID) ([]divulge.Post, error) {
-	m.ListPostsByAccountCount++
+func (m *PostService) ListPosts(ctx context.Context, req divulge.ListPostsReq) ([]divulge.Post, error) {
+	m.ListPostsCount++
 
-	if m.ListPostsByAccountFn != nil {
-		return m.ListPostsByAccountFn(ctx, accountID)
+	if m.ListPostsFn != nil {
+		return m.ListPostsFn(ctx, req)
 	}
 
 	return nil, m.Error

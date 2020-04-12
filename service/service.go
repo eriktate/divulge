@@ -64,8 +64,8 @@ func (s PostService) FetchPost(ctx context.Context, id uuid.UUID) (divulge.Post,
 	return post, err
 }
 
-func (s PostService) ListPostsByAccount(ctx context.Context, accountID uuid.UUID) ([]divulge.Post, error) {
-	return s.ps.ListPostsByAccount(ctx, accountID)
+func (s PostService) ListPosts(ctx context.Context, req divulge.ListPostsReq) ([]divulge.Post, error) {
+	return s.ps.ListPosts(ctx, req)
 }
 
 // RemovePost passes off to another PostService to remove a Post.
