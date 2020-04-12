@@ -1,5 +1,5 @@
 // create a new post
-http://localhost:1337
+http://localhost:8080
 POST /post
 {
 	"id": "469fd738-9c32-4f79-822d-d7683cdff7fa",
@@ -8,10 +8,10 @@ POST /post
 }
 
 // get a post
-http://localhost:1337
+http://localhost:8080
 GET /post/469fd738-9c32-4f79-822d-d7683cdff7fa
 
 
 // list posts
-http://localhost:1337
+http://localhost:8080
 GET /post
